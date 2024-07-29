@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 from datetime import timedelta
-# from decouple import config
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -11,7 +11,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = config('SECRET_KEY')
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 
@@ -196,3 +195,22 @@ SIMPLE_JWT = {
 
 # Password reset token lifetime
 DJANGO_REST_MULTITOKENAUTH_RESET_TOKEN_EXPIRY_TIME = 3  # in hours
+
+CELERY_BROKER_URL=os.getenv('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND=os.getenv('CELERY_RESULT_BACKEND')
+CELERY_ACCEPT_CONTENT=os.getenv('CELERY_ACCEPT_CONTENT')
+CELERY_TASK_SERIALIZER=os.getenv('CELERY_TASK_SERIALIZER')
+CELERY_RESULT_SERIALIZER=os.getenv('CELERY_RESULT_SERIALIZER')
+CELERY_TIMEZONE=os.getenv('CELERY_TIMEZONE')
+
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_USE_SSL = False
+EMAIL_USER_SSL = False

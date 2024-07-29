@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from .models import Recipe, RecipeLike
 from .serializers import RecipeLikeSerializer, RecipeSerializer
 from .permissions import IsAuthorOrReadOnly
-
+from .task import send_email
 
 class RecipeListAPIView(generics.ListAPIView):
     """
@@ -52,6 +52,13 @@ class RecipeLikeAPIView(generics.CreateAPIView):
             user=request.user, recipe=recipe)
         if created:
             new_like.save()
+
+            # subject = 'Your recipe got a new like!'
+            # message = f'Your recipe "{recipe.title}" was liked by {request.user.username}.'
+            # recipient_list = [recipe.author.email]
+
+            # send_email.delay(subject, message, recipient_list)
+
             return Response(status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
