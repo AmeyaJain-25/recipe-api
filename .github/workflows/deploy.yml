@@ -24,7 +24,16 @@ jobs:
           echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
           echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
           echo "POSTGRES_HOSTNAME=${{ secrets.POSTGRES_HOSTNAME }}" >> .env
+          echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
           echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+          echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
+          echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
+          echo "CELERY_BROKER_URL=${{ secrets.CELERY_BROKER_URL }}" >> .env
+          echo "CELERY_RESULT_BACKEND=${{ secrets.CELERY_RESULT_BACKEND }}" >> .env
+          echo "CELERY_ACCEPT_CONTENT=${{ secrets.CELERY_ACCEPT_CONTENT }}" >> .env
+          echo "CELERY_TASK_SERIALIZER=${{ secrets.CELERY_TASK_SERIALIZER }}" >> .env
+          echo "CELERY_RESULT_SERIALIZER=${{ secrets.CELERY_RESULT_SERIALIZER }}" >> .env
+          echo "CELERY_TIMEZONE=${{ secrets.CELERY_TIMEZONE }}" >> .env
 
       - name: Build the Docker image
         run: docker-compose build web
@@ -67,7 +76,16 @@ jobs:
           echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
           echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
           echo "POSTGRES_HOSTNAME=${{ secrets.POSTGRES_HOSTNAME }}" >> .env
+          echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
           echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+          echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
+          echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
+          echo "CELERY_BROKER_URL=${{ secrets.CELERY_BROKER_URL }}" >> .env
+          echo "CELERY_RESULT_BACKEND=${{ secrets.CELERY_RESULT_BACKEND }}" >> .env
+          echo "CELERY_ACCEPT_CONTENT=${{ secrets.CELERY_ACCEPT_CONTENT }}" >> .env
+          echo "CELERY_TASK_SERIALIZER=${{ secrets.CELERY_TASK_SERIALIZER }}" >> .env
+          echo "CELERY_RESULT_SERIALIZER=${{ secrets.CELERY_RESULT_SERIALIZER }}" >> .env
+          echo "CELERY_TIMEZONE=${{ secrets.CELERY_TIMEZONE }}" >> .env
 
       - name: Run the Docker image with compose in detached mode
         run: sudo docker-compose up -d
