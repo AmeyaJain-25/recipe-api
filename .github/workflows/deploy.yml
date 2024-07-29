@@ -65,4 +65,4 @@ jobs:
         run: sudo docker ps
 
       - name: Log latest data
-        run: sudo docker logs web
+        run: sudo docker logs recipe-api-img
