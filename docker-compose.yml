@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   web:
+    image: ameyajain25/recipe-api-img:latest
     build: .
     volumes:
       - .:/code

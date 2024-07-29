@@ -33,16 +33,16 @@ jobs:
 
       - name: Tag the Docker image
         run: |
-          IMAGE_ID=$(docker images -q web:latest)
+          IMAGE_ID=$(docker images -q ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest)
           echo "Image ID: $IMAGE_ID"
           if [ -z "$IMAGE_ID" ]; then
-            echo "Image web:latest not found!"
+            echo "Image ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest not found!"
             exit 1
           fi
-          docker tag web:latest ${{ secrets.DOCKER_USERNAME }}/web:latest
+          docker tag ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest
 
       - name: Push the Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/web:latest
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest
 
   start:
     runs-on: self-hosted
@@ -58,7 +58,7 @@ jobs:
         run: echo $DOCKER_PASSWORD | sudo docker login --username $DOCKER_USERNAME --password-stdin
 
       - name: Pull the Docker image
-        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/web:latest
+        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest
 
       - name: Create .env file
         run: |
