@@ -3,8 +3,6 @@ name: Deploy
 on:
   push:
     branches: ['master']
-  pull_request:
-    branches: ['master']
 
 jobs:
   build:
@@ -21,7 +19,7 @@ jobs:
           echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
 
       - name: Build the Docker image
-        run: docker-compose build
+        run: docker-compose --build
 
       - name: Tag the Docker image
         run: docker tag recipe-api-img:latest ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest
