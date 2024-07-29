@@ -24,6 +24,7 @@ jobs:
           echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
           echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
           echo "POSTGRES_HOSTNAME=${{ secrets.POSTGRES_HOSTNAME }}" >> .env
+          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
 
       - name: Build the Docker image
         run: docker-compose build web
@@ -66,12 +67,10 @@ jobs:
           echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
           echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
           echo "POSTGRES_HOSTNAME=${{ secrets.POSTGRES_HOSTNAME }}" >> .env
+          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
 
       - name: Run the Docker image with compose in detached mode
         run: sudo docker-compose up -d
 
       - name: Check the Docker container
         run: sudo docker ps
-
-      - name: Log latest data
-        run: sudo docker logs web
