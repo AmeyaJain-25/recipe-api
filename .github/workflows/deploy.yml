@@ -1,0 +1,80 @@
+name: Deploy
+
+on:
+  push:
+    branches: ['master']
+  pull_request:
+    branches: ['master']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Docker login
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+
+      - name: Build the Docker image
+        run: docker-compose build
+
+      - name: Tag the Docker image
+        run: docker tag recipe-api-img:latest ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest
+
+      - name: Login to Docker Hub
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Push the Docker image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/recipe-api-img
+
+  start:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Docker login
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo $DOCKER_PASSWORD | sudo docker login --username $DOCKER_USERNAME --password-stdin
+
+      - name: Pull the Docker image
+        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest
+
+      - name: Tagging new docker image as recipe-api-img
+        run: sudo docker tag ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest recipe-api-img:latest
+
+      - name: Run the Docker image with compose in detached mode
+        run: sudo docker run -d recipe-api-img
+      # - name: Run the Docker image with compose in detached mode
+      #   run: |
+      #     sudo \
+      #     NODE_ENV=${{ secrets.NODE_ENV }} \
+      #     MONGO_URI=${{ secrets.MONGO_URI }}
+      #     PORT=${{ secrets.PORT }} \
+      #     JWT_SECRET=${{ secrets.JWT_SECRET }} \
+      #     JWT_EXPIRY=${{ secrets.JWT_EXPIRY }} \
+      #     JWT_ISSUER=${{ secrets.JWT_ISSUER }} \
+      #     REDIS_HOST=${{ secrets.REDIS_HOST }} \
+      #     REDIS_PORT=${{ secrets.REDIS_PORT }}6379 RAZORPAY_KEY_ID=${{ secrets.RAZORPAY_KEY_ID }} \
+      #     RAZORPAY_SECRET=${{ secrets.RAZORPAY_SECRET }} \
+      #     AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+      #     AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+      #     S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }} \
+      #     S3_BUCKET_REGION=${{ secrets.S3_BUCKET_REGION }} \
+      #     CDN_URL=${{ secrets.CDN_URL }} \
+      #     PRODUCT_NAME=${{ secrets.PRODUCT_NAME }} \
+      #     docker run -d recipe-api-img
+
+      - name: Check the Docker image
+        run: sudo docker ps
+
+      - name: Log latest data
+        run: sudo docker logs web
