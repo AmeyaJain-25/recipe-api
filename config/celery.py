@@ -14,12 +14,12 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 
-# app.conf.beat_schedule = {
-#     'send-daily-likes-notification': {
-#         'task': 'recipe.tasks.send_daily_likes_notification',
-#         'schedule': crontab(hour=0, minute=0),  # Runs daily at midnight
-#     },
-# }
+app.conf.beat_schedule = {
+    'send-daily-likes-notification': {
+        'task': 'recipe.tasks.send_daily_likes_notification',
+        'schedule': crontab(hour=0, minute=0),  # Runs daily at midnight
+    },
+}
 
 
 @app.task(bind=True)

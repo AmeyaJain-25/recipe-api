@@ -53,11 +53,11 @@ class RecipeLikeAPIView(generics.CreateAPIView):
         if created:
             new_like.save()
 
-            # subject = 'Your recipe got a new like!'
-            # message = f'Your recipe "{recipe.title}" was liked by {request.user.username}.'
-            # recipient_list = [recipe.author.email]
+            subject = 'Your recipe got a new like!'
+            message = f'Your recipe "{recipe.title}" was liked by {request.user.username}.'
+            recipient_list = [recipe.author.email]
 
-            # send_email.delay(subject, message, recipient_list)
+            send_email.delay(subject, message, recipient_list)
 
             return Response(status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
