@@ -5,90 +5,90 @@ on:
     branches:
       - master
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v3
+#     steps:
+#       - uses: actions/checkout@v3
 
-      - name: Docker login
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+#       - name: Docker login
+#         env:
+#           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+#           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+#         run: echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
 
-      - name: Create .env file
-        run: |
-          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
-          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
-          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
-          echo "POSTGRES_HOSTNAME=${{ secrets.POSTGRES_HOSTNAME }}" >> .env
-          echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
-          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
-          echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
-          echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
-          echo "CELERY_BROKER_URL=${{ secrets.CELERY_BROKER_URL }}" >> .env
-          echo "CELERY_RESULT_BACKEND=${{ secrets.CELERY_RESULT_BACKEND }}" >> .env
-          echo "CELERY_ACCEPT_CONTENT=${{ secrets.CELERY_ACCEPT_CONTENT }}" >> .env
-          echo "CELERY_TASK_SERIALIZER=${{ secrets.CELERY_TASK_SERIALIZER }}" >> .env
-          echo "CELERY_RESULT_SERIALIZER=${{ secrets.CELERY_RESULT_SERIALIZER }}" >> .env
-          echo "CELERY_TIMEZONE=${{ secrets.CELERY_TIMEZONE }}" >> .env
+#       - name: Create .env file
+#         run: |
+#           echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
+#           echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
+#           echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+#           echo "POSTGRES_HOSTNAME=${{ secrets.POSTGRES_HOSTNAME }}" >> .env
+#           echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
+#           echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+#           echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
+#           echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
+#           echo "CELERY_BROKER_URL=${{ secrets.CELERY_BROKER_URL }}" >> .env
+#           echo "CELERY_RESULT_BACKEND=${{ secrets.CELERY_RESULT_BACKEND }}" >> .env
+#           echo "CELERY_ACCEPT_CONTENT=${{ secrets.CELERY_ACCEPT_CONTENT }}" >> .env
+#           echo "CELERY_TASK_SERIALIZER=${{ secrets.CELERY_TASK_SERIALIZER }}" >> .env
+#           echo "CELERY_RESULT_SERIALIZER=${{ secrets.CELERY_RESULT_SERIALIZER }}" >> .env
+#           echo "CELERY_TIMEZONE=${{ secrets.CELERY_TIMEZONE }}" >> .env
 
-      - name: Build the Docker image
-        run: docker-compose build web
+#       - name: Build the Docker image
+#         run: docker-compose build web
 
-      - name: Verify the Docker image
-        run: docker images
+#       - name: Verify the Docker image
+#         run: docker images
 
-      - name: Tag the Docker image
-        run: |
-          IMAGE_ID=$(docker images -q ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest)
-          echo "Image ID: $IMAGE_ID"
-          if [ -z "$IMAGE_ID" ]; then
-            echo "Image ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest not found!"
-            exit 1
-          fi
-          docker tag ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest
+#       - name: Tag the Docker image
+#         run: |
+#           IMAGE_ID=$(docker images -q ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest)
+#           echo "Image ID: $IMAGE_ID"
+#           if [ -z "$IMAGE_ID" ]; then
+#             echo "Image ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest not found!"
+#             exit 1
+#           fi
+#           docker tag ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest
 
-      - name: Push the Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest
+#       - name: Push the Docker image
+#         run: docker push ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest
 
-  start:
-    runs-on: self-hosted
-    needs: build
+#   start:
+#     runs-on: self-hosted
+#     needs: build
 
-    steps:
-      - uses: actions/checkout@v3
+#     steps:
+#       - uses: actions/checkout@v3
 
-      - name: Docker login
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: echo $DOCKER_PASSWORD | sudo docker login --username $DOCKER_USERNAME --password-stdin
+#       - name: Docker login
+#         env:
+#           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+#           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+#         run: echo $DOCKER_PASSWORD | sudo docker login --username $DOCKER_USERNAME --password-stdin
 
-      - name: Pull the Docker image
-        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest
+#       - name: Pull the Docker image
+#         run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/recipe-api-img:latest
 
-      - name: Create .env file
-        run: |
-          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
-          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
-          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
-          echo "POSTGRES_HOSTNAME=${{ secrets.POSTGRES_HOSTNAME }}" >> .env
-          echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
-          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
-          echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
-          echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
-          echo "CELERY_BROKER_URL=${{ secrets.CELERY_BROKER_URL }}" >> .env
-          echo "CELERY_RESULT_BACKEND=${{ secrets.CELERY_RESULT_BACKEND }}" >> .env
-          echo "CELERY_ACCEPT_CONTENT=${{ secrets.CELERY_ACCEPT_CONTENT }}" >> .env
-          echo "CELERY_TASK_SERIALIZER=${{ secrets.CELERY_TASK_SERIALIZER }}" >> .env
-          echo "CELERY_RESULT_SERIALIZER=${{ secrets.CELERY_RESULT_SERIALIZER }}" >> .env
-          echo "CELERY_TIMEZONE=${{ secrets.CELERY_TIMEZONE }}" >> .env
+#       - name: Create .env file
+#         run: |
+#           echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
+#           echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
+#           echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+#           echo "POSTGRES_HOSTNAME=${{ secrets.POSTGRES_HOSTNAME }}" >> .env
+#           echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
+#           echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+#           echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
+#           echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
+#           echo "CELERY_BROKER_URL=${{ secrets.CELERY_BROKER_URL }}" >> .env
+#           echo "CELERY_RESULT_BACKEND=${{ secrets.CELERY_RESULT_BACKEND }}" >> .env
+#           echo "CELERY_ACCEPT_CONTENT=${{ secrets.CELERY_ACCEPT_CONTENT }}" >> .env
+#           echo "CELERY_TASK_SERIALIZER=${{ secrets.CELERY_TASK_SERIALIZER }}" >> .env
+#           echo "CELERY_RESULT_SERIALIZER=${{ secrets.CELERY_RESULT_SERIALIZER }}" >> .env
+#           echo "CELERY_TIMEZONE=${{ secrets.CELERY_TIMEZONE }}" >> .env
 
-      - name: Run the Docker image with compose in detached mode
-        run: sudo docker-compose up -d
+#       - name: Run the Docker image with compose in detached mode
+#         run: sudo docker-compose up -d
 
-      - name: Check the Docker container
-        run: sudo docker ps
+#       - name: Check the Docker container
+#         run: sudo docker ps
